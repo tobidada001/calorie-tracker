@@ -1,0 +1,145 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}{% endblock title %} | Calories Tracker App</title>
+    <link rel="stylesheet" href="{% static 'tailwind-all.min.css' %}" />
+  </head>
+  <body>
+    <nav class="bg-blue-700 text-white sm:flex justify-between p-2 ">
+      <h1 class="font-bold text-2xl md:text-3xl text-center" style="vertical-align: middle">
+        Nutrient and Calories Tracker
+      </h1>
+      <a href="{% url 'logout' %}"> <h1 class="font-bold text-2xl md:text-3xl text-center" style="vertical-align: middle">
+        
+        {% if request.user.is_authenticated %}
+        Welcome, {{request.user}}
+        {% endif %}
+      
+      </h1></a>
+    </nav>
+
+
+
+    <div>
+      {% if messages %}
+        
+        {% for message in messages %}
+       
+        <p id="msg" class="py-8 mt-5 font-semibold text-2xl text-white text-center
+        
+        {% if message.tags == 'warning' %}
+        bg-yellow-400 
+        {% elif message.tags == 'success' %}
+        bg-green-500
+        {% elif message.tags == 'error'%}
+        bg-red-500
+        {% endif %}
+        
+        ">{{message}}</p>
+        {% endfor %}
+          
+      {% endif %}
+     
+    </div>
+
+
+    {% block body %}
+    
+    
+    
+    
+    {% endblock body %}
+
+
+
+
+    
+    <script src="{% static 'Chart.js' %}"></script>
+
+    <script>
+
+      var cts= document.getElementById('categories').getElementsByTagName('div')
+      var dailydiv= document.getElementById('exp_30_days').getElementsByTagName('div')
+
+      console.log(dailydiv)
+      var categs = []
+      var cat_amount = []
+
+      var daily = []
+      var daily_amount = []
+      for (let i = 0; i < cts.length; i++) {
+        
+        if( i% 2 == 1){
+          categs.push(cts[i].children[0].textContent)
+          
+          cat_amount.push(cts[i].children[1].textContent.replace('$', '').replace(',', ''))
+        }else{
+          categs.push(cts[i].children[0].textContent)
+          cat_amount.push(cts[i].children[1].textContent.replace('$', '').replace(',', ''))
+        }
+        
+      }
+
+
+      for (let i = 0; i < dailydiv.length; i++) {
+        
+        if( i% 2 == 1){
+          daily.push(dailydiv[i].children[0].textContent)
+          
+          daily_amount.push(dailydiv[i].children[1].textContent.replace('$', '').replace(',', ''))
+        }else{
+          daily.push(dailydiv[i].children[0].textContent)
+          daily_amount.push(dailydiv[i].children[1].textContent.replace('$', '').replace(',', ''))
+        }
+        
+      }
+      categs= categs.filter(item => item)
+      cat_amount= cat_amount.filter(item => item)
+
+
+      var categoryCtx = document.getElementById('dataOfCategoryExpenses').getContext('2d')
+      var expensesCtx = document.getElementById('dataOfDailyExpense').getContext('2d')
+      var datas = document.getElementById('categoriesFromView').innerHTML
+
+      var  catts = Array(datas)
+      console.log(catts)
+
+   
+      var myChart = new Chart(categoryCtx, {
+        type: 'pie',
+        data: {  labels: categs,
+          datasets: [ {
+          label : 'Number of Categories',
+          data: cat_amount,  backgroundColor: ['rgba(40, 90, 120, 0.6)', 'rgba(120, 90, 200, 0.6)', 'rgba(202, 80, 109, 0.6)', 'rgba(40, 40, 100, 0.6)'],
+
+          borderWidth: 1  } ]
+        }
+      })
+
+     
+      var myChartx = new Chart(expensesCtx, {
+        type: 'line',
+        data: {  labels: daily,
+          datasets: [ {
+          label : 'Daily Expense Sum',
+          data: daily_amount,  backgroundColor: ['rgba(28, 80, 201, 0.4)'],
+
+          borderWidth: 1  } ]
+        }
+      })
+
+      
+      var messagebox = document.getElementById('msg')
+      if (messagebox.style.display != 'none'){
+        setTimeout(()=>{
+          messagebox.style.display= 'none';
+        }, 2500)
+      }
+
+
+    </script>
+  </body>
+</html>

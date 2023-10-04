@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+{% load static %} 
+
+{% block title %}Dashboard{% endblock title %}
+
+{% block body %}
+
+    <div class="bg-gray-200 mt-5 p-2 mb-10">
+      <h2 class="font-semibold text-2xl text-blue-900 ml-5">Add Today's Meal Data...</h2>
+
+      <div class="m-5">
+        <form
+          action=""
+          method="POST"
+          class="md:flex md:justify-center sm:block"
+          style="column-gap: 10px"
+        >
+
+          {% csrf_token %} 
+          
+          <select name="meal_name" required class="h-12 px-3 md:flex-grow md:w-7/12 sm:mt-0 mt-6 rounded-lg" >
+            <option></option>
+
+            {% for meal in  meals%}
+                <option value="{{meal.meal_name}}">{{meal.meal_name}}</option>
+            {% endfor %}
+          
+          </select>
+
+          <input
+            type="submit"
+            class="h-12 bg-blue-900 text-white w-10/12 sm:w-64 sm:mt-0 mt-12 rounded-lg"
+            value="Add"
+          />
+        </form>
+      </div>
+    </div>
+
+
+    <div class="h-70 px-4 bg-gray-100 m-2 pb-20 rounded">
+      <div class="h-16">
+        <h2 class="font-semibold text-2xl pt-6 text-blue-900">
+          Today's Calorie Data...
+        </h2>
+      </div>
+
+      <div class="w-7/12 m-auto"> Progress level: ({{progress}}%)
+        <progress value="{{progress}}" max="100"style="width: 100%; height: 6px; border-radius: 50%;"> </progress>
+      </div>
+
+      <div class="h-64 overflow-x-auto mt-12">
+        <table
+          class="table border-2 border-blue-200 mt-6 w-8/12 m-auto rounded overflow-x-scroll"
+        >
+          <thead class="h-20 shadow text-2xl">
+            <tr>
+              <th class="font-semibold">Meal Type</th>
+              <th class="font-semibold">Carbs</th>
+              <th class="font-semibold">Pro</th>
+              <th class="font-semibold">Fats</th>
+              <th class="font-semibold">Cal.</th>
+              <th class="font-semibold">Mg.</th>
+              <th class="font-semibold">Na.</th>
+              <th class="font-semibold">Chol.</th>
+            </tr>
+          </thead>
+
+         
+          <tbody class="text-center">
+            
+            {% for meal in consumed_meals %}
+           
+            <tr class="h-16">
+              <td>{{meal.food.meal_name| capfirst}}</td>
+              <td>{{meal.food.meal_carbohydrates_level}}</td>
+              <td>  {{ meal.food.meal_protein_level}}</td>
+              <td>  {{ meal.food.meal_fats_level}}</td>
+              <td> {{ meal.food.meal_cal_level}} </td>
+              <td> {{ meal.food.meal_mg_level}} </td>
+              <td>  {{ meal.food.meal_na_level}}</td>
+              <td> {{ meal.food.meal_chol_level}} </td>
+              
+              <td>
+                <a
+                  href="?edit_id="
+                  class="bg-blue-900 py-2 px-6 text-white rounded-full"
+                  >Edit</a
+                >
+              </td>
+              <td>
+                <a
+                  href=""
+                  class="bg-red-600 py-2 px-6 text-white rounded-full"
+                  >Delete</a
+                >
+              </td>
+            </tr>
+            {%empty%}
+
+            <tr class="h-16"><td colspan="6">You haven't added any meals to track today. </td></tr>
+            {% endfor %}
+           
+          </tbody>
+          <tfoot class="text-2xl">
+            <tr>
+              <th class="font-semibold">Total</th>
+              <th class="font-semibold">{{t_carbs.total}}</th>
+              <th class="font-semibold">{{t_pros.total}}</th>
+              <th class="font-semibold">{{t_fats.total}}</th>
+              <th class="font-semibold">{{t_cals.total}}</th>
+              <th class="font-semibold">{{t_mgs.total}}</th>
+              <th class="font-semibold">{{t_nas.total}}</th>
+              <th class="font-semibold">{{t_chols.total}}</th>
+            </tr>
+            
+          </tfoot>
+
+        </table>
+      </div>
+
+    
+
+    </div>
+
+    <div class="w-100 mt-20 md:flex justify-around py-3 font-bold text-2xl">
+      <div class="card shadow-md px-5 mx-5 py-8 text-center flex-grow">
+        <p class="text-orange-500 font-bold">LAST 7 DAYS</p>
+
+        {% if last7days.total_7_days %}
+        <p>{{last7days.total_7_days  }}g</p>
+        {% else %}
+        <p>0g</p>
+        {% endif %}
+      </div>
+
+      <div class="card shadow-md px-5 mx-5 py-8 text-center flex-grow">
+        <p class="text-orange-500 font-bold">LAST 30 DAYS</p>
+        {% if last30days.total_30_days %}
+
+        <p>{{last30days.total_30_days }}g</p>
+        {% else %}
+        <p>0g</p>
+        {% endif %}
+      </div>
+
+      <div class="card shadow-md px-5 mx-5 flex-grow text-center py-8">
+        <p class="text-orange-500 font-bold">LAST 12 MONTHS</p>
+
+        {% if last52weeks.total_52_weeks %}
+        <p>{{last52weeks.total_52_weeks}}g</p>
+        {% else %}
+        <p>0g</p>
+        {% endif %}
+      </div>
+    </div>
+
+
+    <h1 class="font-light text-5xl mt-16 ml-10">Nutrition Charts</h1>
+
+    <p style="display: none;" id="categoriesFromView">{{categories}}</p>
+
+    <div
+      class="mt-10 sm:mx-10 mx-3 lg:flex rounded mb-48 h-auto"
+      style="column-gap: 3em">
+
+      <div class="flex-1 bg-gray-200 h-auto">
+
+        <div class="font-semibold text-2xl flex flex-col items-center justify-center shadow-md h-16">
+          <p>Today's Nutritional data</p>
+        </div>
+
+
+        <div class="py-12">
+          <canvas id="dataOfCategoryExpenses"> </canvas>
+        </div>
+       
+      </div>
+
+      <div class="flex-1 bg-gray-200 flex-wrap lg:mt-0 mt-8" >
+        <div
+          class="font-semibold text-2xl flex flex-col items-center justify-center shadow-md h-16">
+          <p>All time Calorie data</p>
+        </div>
+
+        <div class="py-12"><canvas id="dataOfDailyExpense"></canvas></div>
+        
+      </div>
+    </div>
+  
+    {% endblock body %}
+  

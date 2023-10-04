@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}Sign Up{% endblock title %}
+{% block body %}
+
+    <div class="bg-gray-200 h-auto w-10/12 md:w-7/12 m-auto rounded-lg ">
+    
+            <div class="m-4">
+                <form
+                  action=""
+                  method="POST"
+                  class="md:flex-col md:justify-center py-10 mt-5 relative pb-24"
+                  style="gap: 60px"
+                >
+        
+                  {% csrf_token %} 
+                  
+                  
+                  <input type="text" placeholder="FirstName"
+                  name="firstname" required  class="h-16 px-3 md:flex-grow w-full  mt-6 rounded-lg" />
+                  
+                  <input type="text" placeholder="LastName"
+                  name="lastname" required  class="h-16 px-3 md:flex-grow w-full mt-6 rounded-lg" />
+
+                  <input
+                    type="text"
+                    placeholder="Username"
+                    required
+                    name="username"
+                    class="h-16 px-3 md:flex-grow w-full  mt-6 rounded-lg"
+                  />
+                  
+                  <input
+                    type="password"
+                    placeholder="Password"
+                    required
+                    name="password1"
+                    class="h-16 px-3 md:flex-grow w-full mt-6  rounded-lg"
+                  />
+                  
+                  <input
+                    type="password"
+                    placeholder="Confirm Password"
+                    required
+                    name="password2"
+                    class="h-16 px-3 md:flex-grow w-full mt-6 rounded-lg"
+                  />
+                  
+               
+                  <input
+                    type="submit"
+                    class="h-12 bg-blue-900 text-white w-10/12 sm:w-64 mt-12 rounded "
+                    value="Create Account"
+                  />
+
+                  <a href="{% url 'loginuser' %}" class= "bg-blue-900 p-3 text-white w-10/12 sm:w-64 mt-12 rounded ">Login</a>
+                </form>
+              </div>
+
+    
+    </div>
+    {% endblock body %}
