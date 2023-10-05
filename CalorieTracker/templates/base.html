@@ -49,94 +49,96 @@
     {% block body %}
     
     
-    
-    
+
     {% endblock body %}
 
-
-
-
-    
     <script src="{% static 'Chart.js' %}"></script>
 
     <script>
 
-      var cts= document.getElementById('categories').getElementsByTagName('div')
-      var dailydiv= document.getElementById('exp_30_days').getElementsByTagName('div')
-
-      console.log(dailydiv)
-      var categs = []
-      var cat_amount = []
-
-      var daily = []
-      var daily_amount = []
-      for (let i = 0; i < cts.length; i++) {
-        
-        if( i% 2 == 1){
-          categs.push(cts[i].children[0].textContent)
-          
-          cat_amount.push(cts[i].children[1].textContent.replace('$', '').replace(',', ''))
-        }else{
-          categs.push(cts[i].children[0].textContent)
-          cat_amount.push(cts[i].children[1].textContent.replace('$', '').replace(',', ''))
-        }
-        
-      }
-
-
-      for (let i = 0; i < dailydiv.length; i++) {
-        
-        if( i% 2 == 1){
-          daily.push(dailydiv[i].children[0].textContent)
-          
-          daily_amount.push(dailydiv[i].children[1].textContent.replace('$', '').replace(',', ''))
-        }else{
-          daily.push(dailydiv[i].children[0].textContent)
-          daily_amount.push(dailydiv[i].children[1].textContent.replace('$', '').replace(',', ''))
-        }
-        
-      }
-      categs= categs.filter(item => item)
-      cat_amount= cat_amount.filter(item => item)
-
-
+      var doc = document.querySelectorAll('.table-th')
+      var tr_with_actual_data = document.querySelectorAll('.dynamic-meal-data')
+      var total_n = document.querySelectorAll('.total_nutr')
+      var nutrient_titles = []
       var categoryCtx = document.getElementById('dataOfCategoryExpenses').getContext('2d')
       var expensesCtx = document.getElementById('dataOfDailyExpense').getContext('2d')
       var datas = document.getElementById('categoriesFromView').innerHTML
 
-      var  catts = Array(datas)
-      console.log(catts)
+      var carbs = 0, protein = 0, fats= 0, cal = 0, mg= 0, na= 0, chol = 0
 
-   
-      var myChart = new Chart(categoryCtx, {
-        type: 'pie',
-        data: {  labels: categs,
-          datasets: [ {
-          label : 'Number of Categories',
-          data: cat_amount,  backgroundColor: ['rgba(40, 90, 120, 0.6)', 'rgba(120, 90, 200, 0.6)', 'rgba(202, 80, 109, 0.6)', 'rgba(40, 40, 100, 0.6)'],
+      var sum_all = 0
 
-          borderWidth: 1  } ]
+      if(total_n){
+        carbs = total_n[0].innerHTML
+        protein = total_n[1].innerHTML
+        fats = total_n[2].innerHTML
+        cal = total_n[3].innerHTML
+        mg = total_n[4].innerHTML
+        na = total_n[5].innerHTML
+        chol = total_n[6].innerHTML
+        
+      }
+      sum_all = Number(carbs) + Number(protein) + Number(fats) + Number(cal) + Number(mg) + Number(na) + Number(chol)
+
+      var list_of_items = [(carbs/ sum_all) * 100, (protein/ sum_all) * 100, (fats/ sum_all) * 100, (cal/ sum_all) * 100, (mg/ sum_all) * 100, 
+      (na/ sum_all) * 100, (chol/ sum_all) * 100]
+
+      var all_calories_by_date = []
+      var all_calories_by_calorie_num = []
+      
+
+      for (const iter of doc) {
+        nutrient_titles.push(iter.innerHTML)
+      }
+      
+
+      fetch('/?readyToFetch=true').then(e => e.json()).then(data => {
+        for (const obj of data.alltimedata) {
+            all_calories_by_date.push(obj.date)
+            all_calories_by_calorie_num.push(obj.calorie_quantity)
         }
-      })
 
-     
+
+        
       var myChartx = new Chart(expensesCtx, {
         type: 'line',
-        data: {  labels: daily,
+        data: {  labels: all_calories_by_date,
           datasets: [ {
-          label : 'Daily Expense Sum',
-          data: daily_amount,  backgroundColor: ['rgba(28, 80, 201, 0.4)'],
+          label : 'All time Calories taken',
+          data: all_calories_by_calorie_num,  
+          
+          backgroundColor: ['rgba(28, 80, 201, 0.4)', 'rgba(242, 48, 92, 0.4)'],
 
           borderWidth: 1  } ]
         }
       })
 
       
+      })
+
+
+      var myChart = new Chart(categoryCtx, {
+        type: 'pie',
+        data: {  labels: nutrient_titles,
+          datasets: [ {
+          label : 'Today\'s nutritional data',
+          data: list_of_items,  backgroundColor: ['rgba(40, 90, 120, 0.6)', 'rgba(120, 90, 200, 0.6)', 'rgba(202, 80, 109, 0.6)', 'rgba(40, 40, 100, 0.6)',
+                                  'rgba(220, 30, 65, 0.6)', 'rgba(80, 80, 200, 0.6)', 'rgba(0, 90, 160, 0.6)'],
+
+          borderWidth: 1  } ]
+        }
+      })
+
+     
+      
+
+
+      // Popup message box for displaying django messages.
       var messagebox = document.getElementById('msg')
       if (messagebox.style.display != 'none'){
         setTimeout(()=>{
           messagebox.style.display= 'none';
-        }, 2500)
+        }, 3000)
       }
 
 

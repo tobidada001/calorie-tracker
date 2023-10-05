@@ -50,18 +50,18 @@
 
       <div class="h-64 overflow-x-auto mt-12">
         <table
-          class="table border-2 border-blue-200 mt-6 w-8/12 m-auto rounded overflow-x-scroll"
+          class="table border-2 border-blue-200 mt-6 w-8/12 m-auto rounded overflow-x-scroll" id="nutrientstable"
         >
           <thead class="h-20 shadow text-2xl">
             <tr>
               <th class="font-semibold">Meal Type</th>
-              <th class="font-semibold">Carbs</th>
-              <th class="font-semibold">Pro</th>
-              <th class="font-semibold">Fats</th>
-              <th class="font-semibold">Cal.</th>
-              <th class="font-semibold">Mg.</th>
-              <th class="font-semibold">Na.</th>
-              <th class="font-semibold">Chol.</th>
+              <th class="font-semibold table-th">Carbs</th>
+              <th class="font-semibold table-th">Pro</th>
+              <th class="font-semibold table-th">Fats</th>
+              <th class="font-semibold table-th">Cal.</th>
+              <th class="font-semibold table-th">Mg.</th>
+              <th class="font-semibold table-th">Na.</th>
+              <th class="font-semibold table-th">Chol.</th>
             </tr>
           </thead>
 
@@ -70,7 +70,7 @@
             
             {% for meal in consumed_meals %}
            
-            <tr class="h-16">
+            <tr class="h-16 dynamic-meal-data">
               <td>{{meal.food.meal_name| capfirst}}</td>
               <td>{{meal.food.meal_carbohydrates_level}}</td>
               <td>  {{ meal.food.meal_protein_level}}</td>
@@ -82,14 +82,7 @@
               
               <td>
                 <a
-                  href="?edit_id="
-                  class="bg-blue-900 py-2 px-6 text-white rounded-full"
-                  >Edit</a
-                >
-              </td>
-              <td>
-                <a
-                  href=""
+                  href="{% url 'delete' meal.id %}"
                   class="bg-red-600 py-2 px-6 text-white rounded-full"
                   >Delete</a
                 >
@@ -101,19 +94,23 @@
             {% endfor %}
            
           </tbody>
+          
+          {% if consumed_meals %}
+            
           <tfoot class="text-2xl">
             <tr>
               <th class="font-semibold">Total</th>
-              <th class="font-semibold">{{t_carbs.total}}</th>
-              <th class="font-semibold">{{t_pros.total}}</th>
-              <th class="font-semibold">{{t_fats.total}}</th>
-              <th class="font-semibold">{{t_cals.total}}</th>
-              <th class="font-semibold">{{t_mgs.total}}</th>
-              <th class="font-semibold">{{t_nas.total}}</th>
-              <th class="font-semibold">{{t_chols.total}}</th>
+              <th class="font-semibold total_nutr">{{t_carbs.total}}</th>
+              <th class="font-semibold total_nutr">{{t_pros.total}}</th>
+              <th class="font-semibold total_nutr">{{t_fats.total}}</th>
+              <th class="font-semibold total_nutr">{{t_cals.total}}</th>
+              <th class="font-semibold total_nutr">{{t_mgs.total}}</th>
+              <th class="font-semibold total_nutr">{{t_nas.total}}</th>
+              <th class="font-semibold total_nutr">{{t_chols.total}}</th>
             </tr>
             
           </tfoot>
+          {% endif %}
 
         </table>
       </div>
@@ -127,7 +124,7 @@
         <p class="text-orange-500 font-bold">LAST 7 DAYS</p>
 
         {% if last7days.total_7_days %}
-        <p>{{last7days.total_7_days  }}g</p>
+        <p>{{last7days.total_7_days  }}(g)</p>
         {% else %}
         <p>0g</p>
         {% endif %}
@@ -137,7 +134,7 @@
         <p class="text-orange-500 font-bold">LAST 30 DAYS</p>
         {% if last30days.total_30_days %}
 
-        <p>{{last30days.total_30_days }}g</p>
+        <p>{{last30days.total_30_days }}(g)</p>
         {% else %}
         <p>0g</p>
         {% endif %}
@@ -147,7 +144,7 @@
         <p class="text-orange-500 font-bold">LAST 12 MONTHS</p>
 
         {% if last52weeks.total_52_weeks %}
-        <p>{{last52weeks.total_52_weeks}}g</p>
+        <p>{{last52weeks.total_52_weeks}}(g)</p>
         {% else %}
         <p>0g</p>
         {% endif %}
